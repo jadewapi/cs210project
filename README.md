@@ -1,29 +1,177 @@
-Summarize the project and what problem it was solving.
-The project is a Grocery Tracker application designed to read a list of grocery items from an input file and track the frequency of each item. It solves the problem of managing and analyzing grocery data by allowing users to find the frequency of specific items, print the list of all items with their frequencies, and visualize the data in the form of a histogram. This helps users keep track of their grocery purchases and analyze their buying habits.
+# Grocery Tracker
 
-What did you do particularly well?
-One of the things I did particularly well was designing the program to be user-friendly and intuitive. The menu-driven interface ensures that users can easily navigate through the options. Additionally, the use of a map to store item frequencies was efficient, providing quick look-up times for finding and printing item frequencies.
+## Project Overview
 
-Where could you enhance your code? How would these improvements make your code more efficient, secure, and so on?
-Error Handling: Adding more robust error handling, especially when reading from files and taking user input, would make the code more resilient to unexpected situations.
-Optimization: Improving the file I/O operations by reading and writing in larger chunks could enhance performance.
-Security: Implementing input validation to prevent potential security issues like buffer overflows or injection attacks.
-These improvements would make the code more efficient by reducing the likelihood of errors and improving performance, and more secure by protecting against common vulnerabilities.
+The Grocery Tracker application is designed to read a list of grocery items from an input file and track the frequency of each item. It helps users manage and analyze grocery data by allowing them to:
+- Find the frequency of specific items.
+- Print the list of all items with their frequencies.
+- Visualize the data in the form of a histogram.
 
-Which pieces of the code did you find most challenging to write, and how did you overcome this?
-The most challenging part was implementing the histogram printing function. Ensuring that the histogram was visually appealing and correctly represented the item frequencies required careful attention to detail. I overcame this by incrementally testing and refining the function, making sure to validate the output against known data sets to ensure accuracy.
+This program helps users keep track of their grocery purchases and analyze their buying habits.
 
-What tools or resources are you adding to your support network?
-To enhance my development process, I am adding the following tools and resources:
+## Features
 
-Version Control: Using Git for version control to manage changes and collaborate more effectively.
-Debugging Tools: Incorporating debugging tools like GDB to identify and fix issues more efficiently.
-Online Resources: Utilizing online coding communities, such as Stack Overflow and GitHub, to seek advice and share knowledge with other developers.
-What skills from this project will be particularly transferable to other projects or coursework?
-File I/O Operations: The ability to read from and write to files is a fundamental skill that is applicable in many other projects.
-Data Structures: Understanding and using maps for efficient data storage and retrieval can be transferred to various applications.
-User Interface Design: Creating intuitive and user-friendly interfaces is a valuable skill for any software development project.
-How did you make this program maintainable, readable, and adaptable?
-Modular Design: By encapsulating functionality within a class and breaking down tasks into smaller functions, the code is easier to maintain and understand.
-Comments and Documentation: Including comments and clear documentation helps others (and my future self) understand the purpose and functionality of the code.
-Consistent Formatting: Adhering to consistent coding standards and formatting makes the code more readable and professional.
+1. **Find the frequency of a specific item**: Users can input an item and find out how many times it appears in the list.
+2. **Print the frequency of all items**: Users can print a list of all items and their frequencies.
+3. **Print the histogram of all items**: Users can visualize the frequency of items in a histogram format.
+4. **Backup File Creation**: The program creates a backup file containing item frequencies for future reference.
+
+## Implementation Details
+
+### What Was Done Well
+
+- Designed a user-friendly and intuitive menu-driven interface.
+- Used a map to store item frequencies, ensuring efficient data retrieval.
+
+### Potential Enhancements
+
+- **Error Handling**: Adding robust error handling for file I/O and user input to make the code more resilient.
+- **Optimization**: Improving file I/O operations for better performance.
+- **Security**: Implementing input validation to prevent security issues like buffer overflows or injection attacks.
+
+These enhancements would make the code more efficient, secure, and user-friendly.
+
+### Challenges and Solutions
+
+The most challenging part was implementing the histogram printing function. Ensuring that the histogram was visually appealing and correctly represented the item frequencies required careful attention to detail. This was overcome by incrementally testing and refining the function to ensure accuracy.
+
+### Tools and Resources Added
+
+- **Version Control**: Git for version control to manage changes and collaborate more effectively.
+- **Debugging Tools**: GDB for identifying and fixing issues more efficiently.
+- **Online Resources**: Coding communities like Stack Overflow and GitHub for advice and knowledge sharing.
+
+### Transferable Skills
+
+- **File I/O Operations**: Reading from and writing to files.
+- **Data Structures**: Using maps for efficient data storage and retrieval.
+- **User Interface Design**: Creating intuitive and user-friendly interfaces.
+
+### Code Maintainability
+
+- **Modular Design**: Encapsulating functionality within a class and breaking down tasks into smaller functions.
+- **Comments and Documentation**: Including comments and clear documentation.
+- **Consistent Formatting**: Adhering to consistent coding standards and formatting.
+
+## Code Implementation
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <map>
+#include <iomanip>
+
+using namespace std;
+
+// Class definition for GroceryTracker
+class GroceryTracker {
+public:
+    GroceryTracker(const string& inputFileName, const string& backupFileName);
+    void displayMenu();
+    void handleUserChoice();
+private:
+    map<string, int> items;
+    string backupFileName;
+    void readDataFile(const string& filename);
+    void createBackupFile();
+    void findItemFrequency();
+    void printItemList();
+    void printHistogram();
+};
+
+// Constructor implementation
+GroceryTracker::GroceryTracker(const string& inputFileName, const string& backupFileName) : backupFileName(backupFileName) {
+    readDataFile(inputFileName);
+    createBackupFile();
+}
+
+void GroceryTracker::readDataFile(const string& filename) {
+    ifstream infile(filename);
+    string item;
+
+    while (infile >> item) {
+        items[item]++;
+    }
+
+    infile.close();
+}
+
+void GroceryTracker::createBackupFile() {
+    ofstream outfile(backupFileName);
+
+    for (const auto& item : items) {
+        outfile << item.first << " " << item.second << endl;
+    }
+
+    outfile.close();
+}
+
+void GroceryTracker::displayMenu() {
+    cout << "Menu Options:" << endl;
+    cout << "1. Find the frequency of a specific item" << endl;
+    cout << "2. Print the frequency of all items" << endl;
+    cout << "3. Print the histogram of all items" << endl;
+    cout << "4. Exit" << endl;
+    cout << "Enter your choice: ";
+}
+
+void GroceryTracker::handleUserChoice() {
+    int choice = 0;
+    while (choice != 4) {
+        displayMenu();
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                findItemFrequency();
+                break;
+            case 2:
+                printItemList();
+                break;
+            case 3:
+                printHistogram();
+                break;
+            case 4:
+                cout << "Exiting the program." << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please choose again." << endl;
+        }
+    }
+}
+
+void GroceryTracker::findItemFrequency() {
+    string item;
+    cout << "Enter the item you want to find: ";
+    cin >> item;
+
+    auto it = items.find(item);
+    if (it != items.end()) {
+        cout << item << " appears " << it->second << " times." << endl;
+    } else {
+        cout << item << " does not appear in the list." << endl;
+    }
+}
+
+void GroceryTracker::printItemList() {
+    for (const auto& item : items) {
+        cout << item.first << " " << item.second << endl;
+    }
+}
+
+void GroceryTracker::printHistogram() {
+    for (const auto& item : items) {
+        cout << item.first << " ";
+        for (int i = 0; i < item.second; ++i) {
+            cout << "*";
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    GroceryTracker tracker("CS210_Project_Three_Input_File.txt", "frequency.dat");
+    tracker.handleUserChoice();
+    return 0;
+}
